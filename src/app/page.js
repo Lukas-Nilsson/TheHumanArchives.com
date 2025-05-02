@@ -2,6 +2,7 @@
 
 import EmailCapture from './components/EmailCapture';
 
+
 export default function Landing() {
     return (
       <main className="min-h-screen grid place-items-center bg-tha-black text-tha-ivory">
@@ -15,6 +16,12 @@ export default function Landing() {
           >
             Enter the shop
           </a>
+          <a
+          href="/parallax-gallery/page.js"
+          className="block underline decoration-tha-gold underline-offset-4 hover:text-tha-gold"
+        >
+          View the Parallax Gallery
+        </a>
         </div>
       </main>
     );
