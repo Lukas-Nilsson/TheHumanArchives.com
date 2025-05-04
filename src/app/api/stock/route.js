@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 
-function supabase() {
-  return createServerClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY
-  );
-}
+// one lightweight client, reused across invocations
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
@@ -17,7 +16,7 @@ export async function GET(req) {
     return NextResponse.json({ error: 'bad params' }, { status: 400 });
   }
 
-  const { data, error } = await supabase()
+  const { data, error } = await supabase
     .from('hoodie_stock')
     .select('stock')
     .eq('color', color)
