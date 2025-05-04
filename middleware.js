@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-const PUBLIC_PATHS = ['/waitlist', '/password', '/api/login'];
-
-export function middleware(req: NextRequest) {
+export function middleware(req) {
   const pathname = req.nextUrl.pathname;
   const authed = req.cookies.get('site_auth')?.value === 'true';
 
   const isPublic =
-    PUBLIC_PATHS.some((p) => pathname.startsWith(p)) ||
+    pathname.startsWith('/waitlist') ||
+    pathname.startsWith('/password') ||
+    pathname.startsWith('/api/login') ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon');
 
