@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 
 const EMAIL_RX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// create a lightweight, stateless Supabase client
-function supabase() {
-  return createServerClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_ANON_KEY
-  );
-}
+// one lightweight client for this module
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 
 export async function POST(req) {
   try {
@@ -19,11 +17,11 @@ export async function POST(req) {
       return NextResponse.json({ error: 'invalid' }, { status: 400 });
     }
 
-    const { error } = await supabase()
+    const { error } = await supabase
       .from('waitlist_emails')
       .insert({ email });
 
-    // allow silent duplicates for idempotent UX
+    // allow duplicate inserts so the user still gets “success”
     if (error && error.code !== '23505') {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
