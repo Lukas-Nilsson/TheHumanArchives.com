@@ -31,7 +31,7 @@ export default function Landing() {
             <EmailCapture />
 
             <a
-              href="https://instagram.com/your_handle"
+              href="https://instagram.com/the.human.archives"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block text-xs sm:text-sm uppercase tracking-widest text-tha-gold hover:text-tha-ivory/90"
