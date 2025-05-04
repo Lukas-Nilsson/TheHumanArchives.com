@@ -1,7 +1,5 @@
 // src/app/page.jsx
-
 import EmailCapture from '@/components/email/EmailCapture';
-import HeaderWrapper from '@/components/common/HeaderWrapper';
 
 export const metadata = { title: 'The Human Archives · Wait-list' };
 
@@ -15,17 +13,12 @@ export default function Landing() {
         <EmailCapture />
 
         <a
-          href="/shop"
+          href="https://instagram.com/the.human.archives"
+          target="_blank"
+          rel="noopener noreferrer"
           className="block underline decoration-tha-gold underline-offset-4 hover:text-tha-gold"
         >
-          Enter the shop
-        </a>
-
-        <a
-          href="/parallax-gallery"
-          className="block underline decoration-tha-gold underline-offset-4 hover:text-tha-gold"
-        >
-          View the Parallax Gallery
+          Follow us on Instagram
         </a>
       </div>
     </main>
