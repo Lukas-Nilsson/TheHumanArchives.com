@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 
 export function middleware(req) {
+  console.log('🧠 Middleware is running!');
+
   const pathname = req.nextUrl.pathname;
   const authed = req.cookies.get('site_auth')?.value === 'true';
 
