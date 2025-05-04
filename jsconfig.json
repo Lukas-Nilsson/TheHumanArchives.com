@@ -1,7 +1,10 @@
+// tsconfig.json (or jsconfig.json)
+
 {
   "compilerOptions": {
+    "baseUrl": ".",              // project root
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["src/*"]           // <-- note both patterns end with /* 
     }
   }
 }
