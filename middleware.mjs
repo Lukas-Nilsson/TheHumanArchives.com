@@ -1,16 +1,17 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+// middleware.mjs
 
-export function middleware(req: NextRequest) {
+import { NextResponse } from 'next/server';
+
+/** @param {import('next/server').NextRequest} req */
+export function middleware(req) {
   const pathname = req.nextUrl.pathname;
 
-  console.log('🧪 Middleware running on:', pathname);
+  console.log('🔒 Middleware running on:', pathname);
 
   if (pathname === '/waitlist' || pathname === '/password') {
     return NextResponse.next();
   }
 
-  // 🔒 Force all other pages to redirect to /password
   const url = req.nextUrl.clone();
   url.pathname = '/password';
   return NextResponse.redirect(url);
