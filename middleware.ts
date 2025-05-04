@@ -11,9 +11,12 @@ export function middleware(req: NextRequest) {
     PUBLIC_PATHS.some((p) => pathname.startsWith(p)) ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon') ||
+    pathname.startsWith('/images') ||
     pathname === '/';
 
-  if (isPublic) return NextResponse.next();
+  if (isPublic) {
+    return NextResponse.next();
+  }
 
   if (cookie !== 'true') {
     const url = req.nextUrl.clone();
@@ -25,5 +28,14 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: '/((?!_next|favicon.ico).*)',
+  matcher: [
+    /*
+     * Match all request paths except for:
+     * - static files
+     * - waitlist page
+     * - password gate
+     * - login API
+     */
+    '/((?!_next|favicon.ico|waitlist|password|api/login).*)',
+  ],
 };
