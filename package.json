@@ -3,12 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -H 0.0.0.0 -p 3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:e2e": "playwright test",
-    "dev": "next dev -H 0.0.0.0 -p 3000"
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.10.0",
@@ -32,7 +31,4 @@
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3"
   }
-}
-
-"scripts": {
 }
