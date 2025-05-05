@@ -5,5 +5,5 @@ import SiteHeader from './SiteHeader';
 
 export default function HeaderWrapper() {
   const pathname = usePathname();
-  return pathname === '/' ? null : <SiteHeader />;
+  return <SiteHeader />; //pathname === '/' ? null : 
 }

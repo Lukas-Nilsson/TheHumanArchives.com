@@ -1,8 +1,8 @@
 'use client';
+import useShiftX    from '@/hooks/useShiftX.js';
 import { useRef, useEffect } from 'react';
 import ParallaxHall from '@/components/gallery/ParallaxHall';
 import GhostButton  from '@/components/common/GhostButton';
-import useShiftX    from '@/hooks/useShiftX';
 
 export default function HeroHomepage() {
   const enterRef = useRef(null);
