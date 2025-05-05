@@ -21,7 +21,7 @@ export default function HomeWarmup() {
       '/arch-foreground-origins-2.png',
       '/arch-midground.png',
       '/arch-foreground.png',
-      'public/artifact-wall.png',
+      '/artifact-wall.png',
       '/lukas.JPG',
     ];
     images.forEach((src) => {

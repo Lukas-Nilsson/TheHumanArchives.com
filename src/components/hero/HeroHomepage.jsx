@@ -2,22 +2,29 @@
 import { useRef, useEffect } from 'react';
 import ParallaxHall from '@/components/gallery/ParallaxHall';
 import GhostButton  from '@/components/common/GhostButton';
+import useShiftX    from '@/hooks/useShiftX';
 
 export default function HeroHomepage() {
   const enterRef = useRef(null);
   const titleRef = useRef(null);
 
-  /* ────────── pointer-parallax ────────── */
+  /** unified tilt (gyro on mobile, mouse on desktop) */
+  const shiftX = useShiftX({ maxShift: 40 });
+
+  /* pointer-parallax for ENTER + TITLE  (desktop only) */
   useEffect(() => {
-    const enterEl = enterRef.current;
-    const titleEl = titleRef.current;
+    if (matchMedia('(hover: none)').matches) return; // skip on touch devices
+
+    const enterEl  = enterRef.current;
+    const titleEl  = titleRef.current;
     if (!enterEl || !titleEl) return;
 
     const handleMove = e => {
       const ratio = (e.clientX / window.innerWidth) * 2 - 1; // −1 ←→ 1
+      const txBtn   = ratio * -10;
+      const txTitle = ratio * -20;
 
-      /* ENTER button (small slide) */
-      const txBtn = ratio * -10;
+      /* ENTER button */
       enterEl.style.transform = `
         translateZ(200px)
         translateX(${txBtn}px)
@@ -26,13 +33,10 @@ export default function HeroHomepage() {
         scaleX(0.85)
       `;
 
-      /* TITLE: depth + slide + platter-spin (rotateY) */
-      const txTitle = ratio * -20;      // horizontal slide
-      const ryTitle = ratio * 0;       // lazy-Susan spin ± 8°
+      /* Title platter */
       titleEl.style.transform = `
         translateZ(300px)
         translateX(${txTitle}px)
-        rotateY(${ryTitle}deg)
       `;
     };
 
@@ -42,14 +46,17 @@ export default function HeroHomepage() {
 
   /* ────────── render ────────── */
   return (
-    <section className="relative h-screen w-full bg-[#040500] text-white overflow-hidden">
-      {/* TITLE (platter spin) */}
+    <section
+      className="relative h-screen w-full bg-[#040500] text-white overflow-hidden will-change-transform"
+      style={{ transform: shiftX, transition: 'transform 0.15s ease-out' }}
+    >
+      {/* TITLE */}
       <div
         ref={titleRef}
-        className="absolute top-25 left-1/2 -translate-x-1/2 z-30 text-center transform-gpu transition-transform duration-150 ease-out"
-        style={{ transform: 'translateZ(100px)' }}  /* initial depth */
+        className="absolute top-25 left-1/2 -translate-x-1/2 z-30 text-center transform-gpu"
+        style={{ transform: 'translateZ(300px)' }}
       >
-        <div className="text-2xl font-snas leading-tight tracking-wide">
+        <div className="text-2xl font-sans leading-tight tracking-wide">
           THE<br />HUMAN<br />ARCHIVES
         </div>
       </div>
@@ -73,7 +80,6 @@ export default function HeroHomepage() {
       <div className="absolute bottom-0 inset-x-0 flex justify-center gap-0 z-0">
         <ParallaxHall />
         <ParallaxHall />
-        {/* custom hall */}
         <ParallaxHall
           layers={[
             { src: '/artifact-wall.png', depth: -2300, offset: -200 },

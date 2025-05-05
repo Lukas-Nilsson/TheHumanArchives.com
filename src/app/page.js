@@ -3,7 +3,7 @@ import FadeIn from '@/components/common/FadeIn';
 import HomeWarmup from '@/components/common/HomeWarmup';
 import EmailCapture from '@/components/email/EmailCapture';
 
-export const metadata = { title: 'The Human Archives · Wait-list' };
+export const metadata = { title: 'The Human Archives · Join' };
 
 export default function Landing() {
   return (
