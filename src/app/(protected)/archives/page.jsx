@@ -1,57 +1,40 @@
-// pages/index or /app/(protected)/archives/page.jsx
+// src/app/(protected)/archives/page.jsx
 'use client';
-import { useRef }       from 'react';
-import HeroHomepage from '@/components/hero/HeroHomepage';
-import ArtifactCarousel from '@/components/gallery/ArtifactCarousel';
-import { useRouter, usePathname } from 'next/navigation';
-import { useEffect } from 'react';
 
-export default function ArchivesPage({ children }) {
+import { useEffect, useRef } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+
+import HeroHomepage      from '@/components/hero/HeroHomepage';
+import ArtifactCarousel  from '@/components/gallery/ArtifactCarousel';
+
+export default function Page({ params, searchParams }) {
   const originsRef = useRef(null);
-  const router    = useRouter();
-  const pathname  = usePathname().replace(/\/$/, '');
+  const router     = useRouter();
+  const pathname   = usePathname().replace(/\/$/, '');
+  
+  /* Scroll helper for the ENTER button */
   const scrollToOrigins = () => {
     originsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const handleArchivesClick = e => {
-    if (pathname === '/archives') {          // same page → intercept
-      e.preventDefault();
-      // Remove any hash and smooth-scroll to top
-      router.replace('/archives/', { scroll: false });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
+  /* One-time scroll on mount based on hash */
   useEffect(() => {
-    // Make sure this runs only in the browser
     if (typeof window === 'undefined') return;
 
-    // Helper to scroll the origins carousel into view (if it exists)
-    const scrollToOrigins = () => {
-      document
-        .getElementById('origins')
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
-
-    // Strip trailing slash so "/archives/" === "/archives"
-    const cleanPath = pathname.replace(/\/$/, '');
-    const hash      = window.location.hash;
-
-    if (cleanPath === '/archives' && hash === '') {
-      // ① plain /archives  → top
+    const hash = window.location.hash;
+    if (pathname === '/archives' && hash === '#origins') {
+      originsRef.current
+        ? scrollToOrigins()
+        : document.getElementById('origins')?.scrollIntoView({ behavior: 'smooth' });
+    } else if (pathname === '/archives') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (cleanPath === '/archives' && hash === '#origins') {
-      // ② /archives#origins → scroll to carousel
-      scrollToOrigins();
     }
   }, [pathname]);
 
-
   return (
     <>
-      <HeroHomepage onEnter={scrollToOrigins}/>
-      <ArtifactCarousel ref={originsRef}/>
+      <HeroHomepage onEnter={scrollToOrigins} />
+      <ArtifactCarousel ref={originsRef} />
     </>
   );
 }
