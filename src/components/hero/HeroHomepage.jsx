@@ -43,7 +43,7 @@ export default function HeroHomepage({ onEnter = () => {} }) {
   // 2️⃣ Scroll-driven values
   const { scrollYProgress } = useScroll();
   const shiftX        = useShiftX({ maxShift: 40 });
-  const hallScale     = useTransform(scrollYProgress, [0, 0.5], [1, 3]);
+  const hallScale = useTransform(scrollYProgress, [0, 0.5], [1, 2.6]);
   const hallZ         = useTransform(scrollYProgress, [0, 0.5], ['-300px', '0px']);
   const fadeOpacity   = useTransform(scrollYProgress, [0.1, 0.5], [0, 1]);
   const perspectiveOrigin = useTransform(
@@ -111,21 +111,28 @@ export default function HeroHomepage({ onEnter = () => {} }) {
           {/* PERSPECTIVE & PARALLAX HALLS */}
           {!hideHall && (
             <motion.div
-              onClick={onEnter}             // ⬅️ tap the hall -> scroll
+              onClick={onEnter}
               className="absolute bottom-0 inset-x-0 flex justify-center cursor-pointer"
               style={{
-                perspective:    800,
+                perspective: 800,
                 perspectiveOrigin,
                 transformStyle: 'preserve-3d',
-                willChange: 'transform', 
-                backfaceVisibility: 'hidden',
+                willChange: 'transform, opacity', // promote & keep on GPU
+                backfaceVisibility: 'hidden',     // iOS/Safari flash fix
+                contain: 'paint',                 // isolate repaints (Blink)
               }}
             >
+              {/* fade overlay moved *inside* the promoted layer */}
+              <motion.div
+                className="absolute inset-0 bg-[#040500] pointer-events-none"
+                style={{ opacity: fadeOpacity }}
+              />
+
               <motion.div
                 className="flex justify-center"
                 style={{
-                  scale:           hallScale,
-                  z:               hallZ,
+                  scale: hallScale,
+                  z:     hallZ,
                   transformStyle:  'preserve-3d',
                   transformOrigin: '50% 50%',
                 }}
