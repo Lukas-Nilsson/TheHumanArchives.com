@@ -13,9 +13,6 @@ export default function useShiftX({
   const internalRef = useRef(null);
   const target = externalRef ?? internalRef;
 
-  // Respect accessibility setting
-  const motionOK = !matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   // Single RAF writer to avoid flooding
   const write = useCallback(
     (xNorm) => {
@@ -29,7 +26,12 @@ export default function useShiftX({
   );
 
   useEffect(() => {
-    if (disabled || !motionOK) return;
+    if (disabled) return;
+    if (typeof window === 'undefined') return;
+
+    // Respect accessibility setting
+    const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    if (mq?.matches) return;
 
     let frameId = null;
     const schedule = (xNorm) => {
@@ -38,22 +40,26 @@ export default function useShiftX({
     };
 
     // Desktop pointer
-    const onMouse = (e) => schedule((e.clientX / innerWidth - 0.5) * 2);
+    const onMouse = (e) => schedule((e.clientX / window.innerWidth - 0.5) * 2);
 
     // Mobile gyro
-    const onGyro = (e) => schedule(((e.gamma ?? 0) / 45).clamp(-1, 1));
+    const onGyro = (e) => {
+      const norm = (e.gamma ?? 0) / 45;
+      schedule(Math.max(-1, Math.min(1, norm)));
+    };
 
     // Gyro permission helper
     const enableGyro = async () => {
       if (
         typeof DeviceOrientationEvent?.requestPermission === 'function' &&
         (await DeviceOrientationEvent.requestPermission()) !== 'granted'
-      )
+      ) {
         return;
+      }
       window.addEventListener('deviceorientation', onGyro, true);
     };
 
-    const isTouch = matchMedia('(hover: none)').matches;
+    const isTouch = window.matchMedia('(hover: none)').matches;
     if (isTouch && 'DeviceOrientationEvent' in window) {
       window.addEventListener('click', enableGyro, { once: true });
     } else {
@@ -65,7 +71,7 @@ export default function useShiftX({
       window.removeEventListener('mousemove', onMouse);
       window.removeEventListener('deviceorientation', onGyro, true);
     };
-  }, [disabled, motionOK, write]);
+  }, [disabled, write]);
 
   // When you want React to manage style:
   return { transform, ref: target };

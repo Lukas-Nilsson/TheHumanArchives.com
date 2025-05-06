@@ -1,8 +1,10 @@
+
+export const dynamic = 'force-dynamic';
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SiteHeader from '@/components/common/SiteHeader';
 import HeaderWrapper from '@/components/common/HeaderWrapper';
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,7 +22,7 @@ export const metadata = {
 };
 
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
   return (
     <html lang="en">
       <head></head>

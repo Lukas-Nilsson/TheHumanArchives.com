@@ -5,86 +5,126 @@ import { useRef, useLayoutEffect } from 'react';
 import Image from 'next/image';
 
 export default function ParallaxHall({
-  width       = '100%',
-  yFactor     = -0.03,
-  pointerRatio,
-  layers      = [
-    { src: '/artifact-wall.png',             depth: -2300, offset: -200 },
-    { src: '/arch-midground.png',            depth: -1100, offset: -130 },
-    { src: '/arch-midground.png',            depth:  -900, offset: -110 },
-    { src: '/arch-midground.png',            depth:  -700, offset:  -90 },
-    { src: '/arch-midground.png',            depth:  -500, offset:  -70 },
-    { src: '/arch-midground.png',            depth:  -300, offset:  -50 },
-    { src: '/arch-midground.png',            depth:  -100, offset:  -30 },
-    { src: '/arch-foreground-origins-2.png',  depth:   250, offset:  -10 },
+  pointerX,
+  scrollYProgress,
+  width = '100%',
+  yFactor = -0.02,
+  layers = [
+    { src: '/artifact-wall.png',      depth: -2300, offset: -200 },
+    { src: '/arch-midground.png',     depth: -1100, offset: -130 },
+    { src: '/arch-midground.png',     depth:  -900, offset: -110 },
+    { src: '/arch-midground.png',     depth:  -700, offset:  -90 },
+    { src: '/arch-midground.png',     depth:  -500, offset:  -70 },
+    { src: '/arch-midground.png',     depth:  -300, offset:  -50 },
+    { src: '/arch-midground.png',     depth:  -100, offset:  -30 },
+    { src: '/arch-foreground.png',    depth:   250, offset:  -10 },
   ],
 }) {
   const ref = useRef(null);
-  const PERSPECTIVE = 800;
+  const P   = 800;
 
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    const planes  = Array.from(el.querySelectorAll('[data-depth]'));
-    const depths  = planes.map(p => +p.dataset.depth);
-    const offsets = planes.map(p => +p.dataset.offset);
-    let rafId     = null;
+    // measure center once & on resize
+    let centerX = 0;
+    const halfW = window.innerWidth / 2;
+    const measure = () => {
+      const { left, width: w } = el.getBoundingClientRect();
+      centerX = left + w / 2;
+    };
+    measure();
+    window.addEventListener('resize', measure);
 
-    function apply() {
-      const pr = pointerRatio.get();
-      planes.forEach((node, i) => {
-        const z  = depths[i];
-        const tx = pr * offsets[i];
-        const ty = z * yFactor;
-        const sc = PERSPECTIVE / (PERSPECTIVE - z);
-        node.style.transform = `translate3d(${tx}px, ${ty}px, ${z}px) scale(${sc})`;
-      });
-      rafId = null;
-    }
+    // pointerX → --pr via RAF
+    let rafX = null, xPos = window.innerWidth/2;
+    const applyX = () => {
+      const pr = (xPos - centerX) / halfW;
+      el.style.setProperty('--pr', pr);
+      rafX = null;
+    };
+    const unsubX = pointerX.onChange(v => {
+      xPos = v;
+      if (!rafX) rafX = requestAnimationFrame(applyX);
+    });
+    applyX();
 
-    function schedule() {
-      if (rafId === null) rafId = requestAnimationFrame(apply);
-    }
-
-    // run once at mount
-    schedule();
-
-    // subscribe to pointerRatio changes
-    const unsubscribe = pointerRatio.onChange(schedule);
+    // scrollYProgress → --scrollEase via RAF
+    let rafS = null;
+    const applyS = v => {
+      const norm  = Math.min(v / 1.2, 1);
+      const eased = Math.sqrt(norm);
+      el.style.setProperty('--scrollEase', eased);
+      rafS = null;
+    };
+    const unsubS = scrollYProgress.onChange(v => {
+      if (!rafS) rafS = requestAnimationFrame(() => applyS(v));
+    });
+    el.style.setProperty('--scrollEase', 0);
 
     return () => {
-      unsubscribe();
-      if (rafId !== null) cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', measure);
+      unsubX(); unsubS();
+      if (rafX) cancelAnimationFrame(rafX);
+      if (rafS) cancelAnimationFrame(rafS);
     };
-  }, [pointerRatio, yFactor, layers]);
+  }, [pointerX, scrollYProgress]);
 
-  const maxDepth      = Math.max(...layers.map(l => Math.abs(l.depth)));
-  const backMostDepth = Math.min(...layers.map(l => l.depth));
+  const maxDepth  = Math.max(...layers.map(l => Math.abs(l.depth)));
+  const backDepth = Math.min(...layers.map(l => l.depth));
 
   return (
     <div
       ref={ref}
-      className="relative overflow-hidden min-w-[350px] max-w-[600px] absolute bottom-0"
+      className="relative overflow-hidden min-w-[350px] max-w-[600px] absolute bottom-0 will-change-transform"
       style={{
         width,
         aspectRatio:    '9/16',
         transformStyle: 'preserve-3d',
+        '--pr':         0,
+        '--scrollEase': 0,
       }}
     >
-      {layers.map((l) => {
-        const isBack     = l.depth === backMostDepth;
-        const isFront    = l.depth > 0;
-        const dim        = !isBack && !isFront;
-        const strength   = Math.abs(l.depth) / maxDepth;
-        const brightness = dim ? 1 - strength * 1.6 : 1;
+      {layers.map(l => {
+        const isWall   = l.src.includes('artifact-wall');
+        const rawScale = P / (P - l.depth);
+        const baseScale = isWall
+          ? Math.max(rawScale, 0.3)
+          : rawScale;
+        const strength  = l.depth > 0
+          ? 0
+          : Math.abs(l.depth) / maxDepth;
+        let ty = l.depth * yFactor;
+        if (isWall) ty *= 0.6;
+        const brightness = l.depth === backDepth
+          ? 1
+          : 1 - (Math.abs(l.depth) / maxDepth) * 1.6;
+
+        // adjust deeper layers' X-translation intensity
+        // use 0.5 so artifact-wall (strength=1) still moves at 50% of offset
+        const moveFactor = `calc(1 - var(--strength) * 0.4)`;
 
         return (
           <div
             key={l.depth}
-            data-depth={l.depth}
-            data-offset={l.offset}
-            className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full will-change-transform"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full will-change-transform"
+            style={{
+              '--base-scale': baseScale,
+              '--strength':   strength,
+              transform: `
+                translate3d(
+                  calc(var(--pr) * ${l.offset}px * ${moveFactor}),
+                  ${ty}px,
+                  ${l.depth}px
+                )
+                scale(calc(
+                  var(--base-scale)
+                  * (1 - var(--scrollEase) * var(--strength))
+                ))
+              `,
+              filter: `brightness(${brightness})`,
+            }}
           >
             <Image
               src={l.src}
@@ -92,8 +132,8 @@ export default function ParallaxHall({
               fill
               draggable={false}
               className="object-cover"
-              priority={isFront}
-              style={{ filter: `brightness(${brightness})` }}
+              priority={l.depth > 0}
+              sizes="(max-width: 640px) 100vw, 600px"
             />
           </div>
         );
