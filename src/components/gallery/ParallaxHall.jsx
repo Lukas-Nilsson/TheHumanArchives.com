@@ -29,7 +29,7 @@ export default function ParallaxHall({
 
     // measure center once & on resize
     let centerX = 0;
-    const halfW = window.innerWidth / 2;
+    const halfW = window.innerWidth / -2;
     const measure = () => {
       const { left, width: w } = el.getBoundingClientRect();
       centerX = left + w / 2;
@@ -40,6 +40,10 @@ export default function ParallaxHall({
     // pointerX → --pr via RAF
     let rafX = null, xPos = window.innerWidth/2;
     const applyX = () => {
+      // 🔄 recalc centre on every RAF so changes in scale are captured
+      const { left, width } = el.getBoundingClientRect();
+      centerX = left + width / 2;
+  
       const pr = (xPos - centerX) / halfW;
       el.style.setProperty('--pr', pr);
       rafX = null;
@@ -56,6 +60,7 @@ export default function ParallaxHall({
       const norm  = Math.min(v / 1.2, 1);
       const eased = Math.sqrt(norm);
       el.style.setProperty('--scrollEase', eased);
+      applyX();
       rafS = null;
     };
     const unsubS = scrollYProgress.onChange(v => {
@@ -90,20 +95,20 @@ export default function ParallaxHall({
         const isWall   = l.src.includes('artifact-wall');
         const rawScale = P / (P - l.depth);
         const baseScale = isWall
-          ? Math.max(rawScale, 0.3)
+          ? Math.max(rawScale, 0.2)
           : rawScale;
         const strength  = l.depth > 0
           ? 0
           : Math.abs(l.depth) / maxDepth;
         let ty = l.depth * yFactor;
-        if (isWall) ty *= 0.6;
+        if (isWall) ty *= 0.5;
         const brightness = l.depth === backDepth
           ? 1
           : 1 - (Math.abs(l.depth) / maxDepth) * 1.6;
 
         // adjust deeper layers' X-translation intensity
         // use 0.5 so artifact-wall (strength=1) still moves at 50% of offset
-        const moveFactor = `calc(1 - var(--strength) * 0.4)`;
+        const moveFactor = `calc(1 - var(--strength) * 0.5)`;
 
         return (
           <div

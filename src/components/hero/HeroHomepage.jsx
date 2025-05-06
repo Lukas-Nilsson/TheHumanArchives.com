@@ -13,11 +13,22 @@ import useShiftX from '@/hooks/useShiftX.js';
 import ParallaxHall from '@/components/gallery/ParallaxHall';
 import GhostButton from '@/components/common/GhostButton';
 
-export default function HeroHomepage() {
+export default function HeroHomepage({ onEnter = () => {} }) {
   const sectionRef = useRef(null);
   const titleRef   = useRef(null);
   const enterRef   = useRef(null);
   const [hideHall, setHideHall] = useState(false);
+  const layersForHall2 = [
+    { src: '/artifact-wall.png',      depth: -2300, offset: -200 },
+    { src: '/arch-midground.png',     depth: -1100, offset: -130 },
+    { src: '/arch-midground.png',     depth:  -900, offset: -110 },
+    { src: '/arch-midground.png',     depth:  -700, offset:  -90 },
+    { src: '/arch-midground.png',     depth:  -500, offset:  -70 },
+    { src: '/arch-midground.png',     depth:  -300, offset:  -50 },
+    { src: '/arch-midground.png',     depth:  -100, offset:  -30 },
+    { src: '/arch-foreground-origins-2.png',    depth:   250, offset:  -10 },
+  ];
+  
 
   // 1️⃣ Global pointerX
   const pointerX = useMotionValue(0);
@@ -76,7 +87,7 @@ export default function HeroHomepage() {
           {/* TITLE */}
           <div
             ref={titleRef}
-            className="absolute top-24 left-1/2 -translate-x-1/2 z-30 text-center select-none pointer-events-none"
+            className="absolute top-40 left-1/2 -translate-x-1/2 z-30 text-left select-none pointer-events-none"
           >
             <div className="text-2xl leading-tight tracking-wide">
               THE<br />HUMAN<br />ARCHIVES
@@ -84,10 +95,14 @@ export default function HeroHomepage() {
           </div>
 
           {/* ENTER BUTTON */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30">
+          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30">
             <div ref={enterRef} className="flex flex-col items-center">
               <div className="text-sm opacity-60 mb-1">▲</div>
-              <GhostButton as="div" className="text-lg px-10 py-3">
+              <GhostButton
+                as="button"                 // button not div
+                onClick={onEnter}           // ⬅️ smooth-scroll
+                className="text-lg px-10 py-3"
+              >
                 ENTER
               </GhostButton>
             </div>
@@ -96,7 +111,8 @@ export default function HeroHomepage() {
           {/* PERSPECTIVE & PARALLAX HALLS */}
           {!hideHall && (
             <motion.div
-              className="absolute bottom-0 inset-x-0 flex justify-center"
+              onClick={onEnter}             // ⬅️ tap the hall -> scroll
+              className="absolute bottom-0 inset-x-0 flex justify-center cursor-pointer"
               style={{
                 perspective:    800,
                 perspectiveOrigin,
@@ -112,13 +128,11 @@ export default function HeroHomepage() {
                   transformOrigin: '50% 50%',
                 }}
               >
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <ParallaxHall
-                    key={i}
-                    pointerX={pointerX}
-                    scrollYProgress={scrollYProgress}
-                  />
-                ))}
+                <ParallaxHall key={0} pointerX={pointerX} scrollYProgress={scrollYProgress} />
+                <ParallaxHall key={1} pointerX={pointerX} scrollYProgress={scrollYProgress} />
+                <ParallaxHall key={2} pointerX={pointerX} scrollYProgress={scrollYProgress} layers={layersForHall2} />
+                <ParallaxHall key={3} pointerX={pointerX} scrollYProgress={scrollYProgress} />
+                <ParallaxHall key={4} pointerX={pointerX} scrollYProgress={scrollYProgress} />
               </motion.div>
             </motion.div>
           )}

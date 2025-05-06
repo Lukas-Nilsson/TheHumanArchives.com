@@ -37,7 +37,8 @@ export default function useParallax(ref, cfg) {
 
     const onScroll = () => {
       const rect = el.getBoundingClientRect();
-      scrollRatio = ((rect.left + rect.width / 2) - innerWidth / 2) / (innerWidth / 2);
+      const raw = ((rect.left + rect.width / 2) - innerWidth / 2) / (innerWidth / 2);
+      scrollRatio = Math.max(-1, Math.min(1, raw));   // ← clamp to [-1, 1]
       apply();
     };
 
