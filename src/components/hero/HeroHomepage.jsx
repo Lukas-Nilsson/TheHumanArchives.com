@@ -117,6 +117,8 @@ export default function HeroHomepage({ onEnter = () => {} }) {
                 perspective:    800,
                 perspectiveOrigin,
                 transformStyle: 'preserve-3d',
+                willChange: 'transform', 
+                backfaceVisibility: 'hidden',
               }}
             >
               <motion.div
