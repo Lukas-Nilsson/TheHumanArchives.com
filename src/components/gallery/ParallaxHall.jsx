@@ -9,27 +9,28 @@ export default function ParallaxHall({
   width = '100%',
   yFactor = -0.02,
   layers = [
-    { src: '/artifact-wall.png',  depth: -6,  offset: -200 },
-    { src: '/arch-midground.png', depth: -5,  offset: -130 },
-    { src: '/arch-midground.png', depth: -4,  offset: -110 },
-    { src: '/arch-midground.png', depth: -3,  offset:  -90 },
-    { src: '/arch-midground.png', depth: -2,  offset:  -70 },
-    { src: '/arch-midground.png', depth: -1,  offset:  -50 },
-    { src: '/arch-midground.png', depth:  0,  offset:  -30 },
-    { src: '/arch-foreground.png',depth:  1,  offset:  -10 },
+    { src: '/artifact-wall.png',  depth: -6, offset: -200 },
+    { src: '/arch-midground.png', depth: -5, offset: -130 },
+    { src: '/arch-midground.png', depth: -4, offset: -110 },
+    { src: '/arch-midground.png', depth: -3, offset:  -90 },
+    { src: '/arch-midground.png', depth: -2, offset:  -70 },
+    { src: '/arch-midground.png', depth: -1, offset:  -50 },
+    { src: '/arch-midground.png', depth:  0, offset:  -30 },
+    { src: '/arch-foreground.png',depth:  1, offset:  -10 }, // foreground
   ],
 }) {
   const ref = useRef(null);
-  const P   = 800;
 
-  /* ───────────────── pointer + scroll → CSS vars ───────────────── */
+  /* ── pointer + scroll → CSS vars ─────────────────────────────── */
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    // X-parallax
-    let rafX = null, xPos = window.innerWidth / 2, centerX = 0;
-    const halfW = -(window.innerWidth / 2);
+    /* pointer-X */
+    let rafX = null,
+      xPos = window.innerWidth / 2,
+      centerX = 0;
+    const halfW = -(window.innerWidth / 2);      //  ← back to NEGATIVE
     const measure = () => {
       const { left, width } = el.getBoundingClientRect();
       centerX = left + width / 2;
@@ -47,7 +48,7 @@ export default function ParallaxHall({
     });
     applyX();
 
-    // scroll ease 0-1 → sqrt easing
+    /* scroll-ease */
     let rafS = null;
     const applyS = v => {
       const eased = Math.sqrt(Math.max(0, Math.min(v, 1)) / 1.2);
@@ -61,15 +62,21 @@ export default function ParallaxHall({
 
     return () => {
       window.removeEventListener('resize', measure);
-      unX(); unS();
+      unX();
+      unS();
       if (rafX) cancelAnimationFrame(rafX);
       if (rafS) cancelAnimationFrame(rafS);
     };
   }, [pointerX, scrollYProgress]);
 
-  /* ───────────────── render ───────────────── */
+  /* ── constants to control apparent depth ─────────────────────── */
+  const DEPTH_SPREAD = 100;     // bigger → layers differ more in size
+  const BASE_P       = 600;     // overall scale baseline
+  const FRONT_BOOST  = 0.45;    // extra scale for positive-depth layer(s)
+
   const maxDepth = Math.max(...layers.map(l => Math.abs(l.depth)));
 
+  /* ── render ──────────────────────────────────────────────────── */
   return (
     <div
       ref={ref}
@@ -82,14 +89,16 @@ export default function ParallaxHall({
       }}
     >
       {layers.map(l => {
-        // map depth → strength 0-1 (far = 1)
         const strength = Math.abs(l.depth) / maxDepth;
 
-        /* fake Z-parallax with Y-shift + scale */
-        const baseScale = P / (P - l.depth * 120);       // tweak 120 for spread
-        const ty        = l.depth * yFactor * 120;       // same factor for Y
+        /* scale & Y-offset: fake 3-D */
+        const baseScale =
+          l.depth > 0
+            ? 1 + l.depth * FRONT_BOOST                     // foreground boost
+            : BASE_P / (BASE_P - l.depth * DEPTH_SPREAD);   // back layers
+        const ty = l.depth * yFactor * DEPTH_SPREAD;
 
-        const moveFactor = `calc(1 - ${strength} * 0.5)`; // deeper → slower X
+        const moveFactor = `calc(1 - ${strength} * 0.5)`;
 
         return (
           <div
@@ -103,6 +112,7 @@ export default function ParallaxHall({
               `,
               backfaceVisibility: 'hidden',
               transformOrigin: '50% 50%',
+              outline: '1px solid transparent', // seam-hiding trick
             }}
           >
             <Image
