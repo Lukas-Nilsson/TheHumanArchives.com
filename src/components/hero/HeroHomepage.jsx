@@ -139,11 +139,72 @@ export default function HeroHomepage({ onEnter = () => {} }) {
                   transformOrigin: '50% 50%',
                 }}
               >
-                <ParallaxHall key={0} pointerX={pointerX} scrollYProgress={scrollYProgress} />
-                <ParallaxHall key={1} pointerX={pointerX} scrollYProgress={scrollYProgress} />
-                <ParallaxHall key={2} pointerX={pointerX} scrollYProgress={scrollYProgress} layers={layersForHall2} />
-                <ParallaxHall key={3} pointerX={pointerX} scrollYProgress={scrollYProgress} />
-                <ParallaxHall key={4} pointerX={pointerX} scrollYProgress={scrollYProgress} />
+                <div
+                  style={{
+                    backfaceVisibility: 'hidden',
+                    transform: 'translateZ(0)',
+                    willChange: 'transform',
+                  }}
+                >
+                  <ParallaxHall
+                    key={0}
+                    pointerX={pointerX}
+                    scrollYProgress={scrollYProgress}
+                  />
+                </div>
+                <div
+                  style={{
+                    backfaceVisibility: 'hidden',
+                    transform: 'translateZ(0)',
+                    willChange: 'transform',
+                  }}
+                >
+                  <ParallaxHall
+                    key={1}
+                    pointerX={pointerX}
+                    scrollYProgress={scrollYProgress}
+                  />
+                </div>
+                <div
+                  style={{
+                    backfaceVisibility: 'hidden',
+                    transform: 'translateZ(0)',
+                    willChange: 'transform',
+                  }}
+                >
+                  <ParallaxHall
+                    key={2}
+                    pointerX={pointerX}
+                    scrollYProgress={scrollYProgress}
+                    layers={layersForHall2}
+                  />
+                </div>
+                <div
+                  style={{
+                    backfaceVisibility: 'hidden',
+                    transform: 'translateZ(0)',
+                    willChange: 'transform',
+                  }}
+                >
+                  <ParallaxHall
+                    key={3}
+                    pointerX={pointerX}
+                    scrollYProgress={scrollYProgress}
+                  />
+                </div>
+                <div
+                  style={{
+                    backfaceVisibility: 'hidden',
+                    transform: 'translateZ(0)',
+                    willChange: 'transform',
+                  }}
+                >
+                  <ParallaxHall
+                    key={4}
+                    pointerX={pointerX}
+                    scrollYProgress={scrollYProgress}
+                  />
+                </div>
               </motion.div>
             </motion.div>
           )}

@@ -110,6 +110,7 @@ export default function ParallaxHall({
         // use 0.5 so artifact-wall (strength=1) still moves at 50% of offset
         const moveFactor = `calc(1 - var(--strength) * 0.5)`;
         const safeZ = Math.min(l.depth, -50);
+        
         return (
           <div
             key={l.depth}
@@ -117,7 +118,9 @@ export default function ParallaxHall({
             style={{
               '--base-scale': baseScale,
               '--strength':   strength,
+              backfaceVisibility: 'hidden',
               transform: `
+                translateZ(0)
                 translate3d(
                   calc(var(--pr) * ${l.offset}px * ${moveFactor}),
                   ${ty}px,
@@ -128,7 +131,6 @@ export default function ParallaxHall({
                   * (1 - var(--scrollEase) * var(--strength))
                 ))
               `,
-              filter: `brightness(${brightness})`,
             }}
           >
             <Image
