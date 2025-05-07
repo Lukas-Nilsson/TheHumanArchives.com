@@ -32,8 +32,8 @@ export default function HeroHomepage({ onEnter = () => {} }) {
   const { scrollYProgress } = useScroll();
   const clamped = useTransform(scrollYProgress, v => Math.max(0, Math.min(1, v)));
 
-  const hallScale   = useTransform(clamped, [0, 0.6], [1, 4]); // gentler zoom
-  const fadeOpacity = useTransform(clamped, [0.1, 0.6], [0, 1]);
+  const hallScale   = useTransform(clamped, [0, 1], [1, 5]); // gentler zoom
+  const fadeOpacity = useTransform(clamped, [0.1, 0.7], [0, 1]);
   useMotionValueEvent(clamped, 'change', v => setHideHall(v > 0.8));
 
   /* ── micro-parallax text ── */
@@ -63,26 +63,44 @@ export default function HeroHomepage({ onEnter = () => {} }) {
 
           {/* Enter button */}
           <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30">
-            <div ref={enterRef} className="flex flex-col items-center">
-              <div className="text-sm opacity-60 mb-1">▲</div>
-              <GhostButton as="button" onClick={onEnter} className="text-lg px-10 py-3">
+            <div ref={enterRef} className="flex flex-col items-center cursor-pointer">
+              <GhostButton as="button" onClick={onEnter} className="text-lg px-10 py-40">
                 ENTER
               </GhostButton>
             </div>
           </div>
 
-          {/* Parallax halls */}
+          {/* ───── Parallax halls ───── */}
           {!hideHall && (
             <motion.div
               onClick={onEnter}
               className="absolute bottom-0 inset-x-0 flex justify-center cursor-pointer"
               style={{ scale: hallScale, willChange: 'transform' }}
             >
-              {[0, 1, 2, 3, 4].map(i => (
-                 <div key={i} style={i ? { marginLeft: '-5px' } : undefined}>
-                  <ParallaxHall pointerX={pointerX} scrollYProgress={scrollYProgress} />
-                </div>
-              ))}
+              {/*  strip wrapper must be relative so mask <span>s align */}
+              <div className="relative flex">
+                {/* halls */}
+                {[0, 1, 2, 3, 4].map(i => (
+                  <div key={i} style={i ? { marginLeft: '-1px' } : undefined}>
+                    <ParallaxHall
+                      pointerX={pointerX}
+                      scrollYProgress={scrollYProgress}
+                    />
+                  </div>
+                ))}
+
+                {/* seam-mask bars */}
+                {[1, 2, 3, 4].map(i => (
+                  <span
+                    key={`mask-${i}`}
+                    className="pointer-events-none absolute inset-y-0 w-4"
+                    style={{
+                      left: `calc(${i} * 100% - 1px)`,   // centres each 4-px bar
+                      background: '#040500',            // match page bg colour
+                    }}
+                  />
+                ))}
+              </div>
             </motion.div>
           )}
         </motion.div>

@@ -58,6 +58,8 @@ export default function ParallaxHall({
     const applyS = v => {
       const eased = Math.sqrt(Math.max(0, Math.min(v, 1)) / 1.2);
       el.style.setProperty('--scrollEase', eased);
+
+      applyX();              // 👈 NEW—re-run X-ratio after scaling changes
       rafS = null;
     };
     const unS = scrollYProgress.onChange(v => {
@@ -112,7 +114,6 @@ export default function ParallaxHall({
               `,
               backfaceVisibility: 'hidden',
               transformOrigin: '50% 50%',
-              outline: '1px solid transparent',   // hide sub-pixel seams
             }}
           >
             <Image

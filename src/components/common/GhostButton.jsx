@@ -14,8 +14,8 @@ export default function GhostButton({
         inline-block px-10 py-3
         tracking-wide uppercase font-medium
         border-neutral-100 text-neutral-100
-        hover:border-black hover:text-black
-        transition-colors
+        hover:border-grey hover:text-neutral-40
+        transition-colors cursor-pointer
         ${className}
       `}
     >
