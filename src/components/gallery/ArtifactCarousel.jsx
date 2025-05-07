@@ -18,6 +18,41 @@ const artifacts = [
   { src: '/artifacts/lomekwi-3.png',            alt: 'Lomekwi 3 stone tools (3.3 Myr BP)' },
 ];
 
+const Glow = ({ delay = 0 }) => (
+  <motion.div
+    // Animate the intensity & diameter on a slow loop
+    initial   = {{ opacity: 0.25, scale: 0.8 }}
+    animate   = {{ opacity: [0.25, 0.5, 0.25], scale: [0.8, 1.1, 0.8] }}
+    transition={{
+      duration: 6,
+      repeat:   Infinity,
+      ease:     'easeInOut',
+      delay,
+    }}
+    className="absolute inset-0 pointer-events-none z-10"
+    style={{
+      background:
+        'radial-gradient(ellipse at 50% 35%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.25) 40%, transparent 70%)',
+      filter: 'blur(90px)',
+      mixBlendMode: 'screen',      // keeps whites bright without washing colour
+    }}
+  />
+);
+
+// put this near the <Glow /> helper
+const Vignette = () => (
+  <div
+    className="absolute inset-0 pointer-events-none z-5"
+    style={{
+      /* translucent black ring that gets stronger at the edges */
+      background:
+        'radial-gradient(ellipse at 50% 50%, transparent 65%, rgba(0,0,0,0.6) 100%)',
+      mixBlendMode: 'multiply',   // darkens whatever is beneath without tinting colours
+    }}
+  />
+);
+
+
 const ArtifactCarousel = forwardRef(function ArtifactCarousel(_, refPassed) {
   const trackRef  = useRef(null);
   const controls  = useAnimationControls();
@@ -66,12 +101,10 @@ const ArtifactCarousel = forwardRef(function ArtifactCarousel(_, refPassed) {
         </>
       )}
 
-      {/* ─── Track wrapper: native swipe on mobile ─── */}
-      <div   className={`
-    ${isDesktop
-      ? 'md:overflow-hidden'
-      : 'overflow-x-auto scroll-smooth snap-x snap-mandatory'}
-      px-8 md:px-12 pb-6 md:pb-8 scrollbar-black
+     {/* ─── Track wrapper: native swipe on mobile ─── */}
+     <div className={`
+        ${isDesktop ? 'md:overflow-hidden' : 'overflow-x-auto scroll-smooth snap-x snap-mandatory'}
+        px-8 md:px-12 pb-6 md:pb-8 scrollbar-black
       `}>
         <motion.ul
           ref={trackRef}
@@ -82,8 +115,15 @@ const ArtifactCarousel = forwardRef(function ArtifactCarousel(_, refPassed) {
           className="flex gap-8 px-8 md:cursor-grab md:active:cursor-grabbing"
         >
           {artifacts.map(({ src, alt }, i) => (
-            <li key={i} className="flex-shrink-0 w-[80vw] md:w-[36vw] snap-center px-4 py-10">
+            <li
+              key={i}
+              className="flex-shrink-0 w-[80vw] md:w-[36vw] snap-center px-4 py-40"
+            >
               <div className="aspect-[4/3] relative rounded-lg overflow-hidden bg-[#0b0c10]">
+                {/* ✨ spotlight layer */}
+                <Vignette /> 
+                <Glow delay={i * 0.3} />   {/* small stagger keeps variety */}
+
                 <Image
                   src={src}
                   alt={alt}
@@ -92,7 +132,7 @@ const ArtifactCarousel = forwardRef(function ArtifactCarousel(_, refPassed) {
                   className="object-cover"
                   priority={i === 0}
                 />
-                <span className="absolute inset-x-0 bottom-0 bg-black/60 text-xs text-center py-2 tracking-wide">
+                <span className="absolute inset-x-0 bottom-0 bg-black/60 text-xs text-center py-2 tracking-wide z-20">
                   {alt}
                 </span>
               </div>

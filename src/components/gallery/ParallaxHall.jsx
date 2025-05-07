@@ -7,7 +7,7 @@ export default function ParallaxHall({
   pointerX,
   scrollYProgress,
   width = '100%',
-  yFactor = -0.02,
+  yFactor = 0,
   layers = [
     { src: '/artifact-wall.png',  depth: -6, offset: -200 },
     { src: '/arch-midground.png', depth: -5, offset: -130 },
