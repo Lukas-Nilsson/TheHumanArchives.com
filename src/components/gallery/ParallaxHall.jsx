@@ -16,29 +16,34 @@ export default function ParallaxHall({
     { src: '/arch-midground.png', depth: -2, offset:  -70 },
     { src: '/arch-midground.png', depth: -1, offset:  -50 },
     { src: '/arch-midground.png', depth:  0, offset:  -30 },
-    { src: '/arch-foreground.png',depth:  1, offset:  -10 }, // foreground
+    { src: '/arch-foreground.png',depth:  1, offset:  -10 },
   ],
 }) {
   const ref = useRef(null);
 
-  /* ── pointer + scroll → CSS vars ─────────────────────────────── */
+  /* ─────────── Tunables ─────────── */
+  const DEPTH_SPREAD = 100;   // spacing between layer sizes
+  const BASE_P       = 600;   // base scale divisor
+  const FRONT_BOOST  = 0.45;  // extra pop for positive-depth layer(s)
+
+  /* ───────── pointer & scroll → CSS vars ───────── */
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    /* pointer-X */
-    let rafX = null,
-      xPos = window.innerWidth / 2,
-      centerX = 0;
-    const halfW = -(window.innerWidth / 2);      //  ← back to NEGATIVE
-    const measure = () => {
-      const { left, width } = el.getBoundingClientRect();
-      centerX = left + width / 2;
-    };
-    measure();
-    window.addEventListener('resize', measure);
+    /* track hall centre on every frame so scaling never drifts */
+    const halfW = -(window.innerWidth / 2);  // invert X-parallax
+    let xPos = window.innerWidth / 2;
 
+    const measureCenter = () => {
+      const { left, width } = el.getBoundingClientRect();
+      return left + width / 2;
+    };
+
+    /* pointer-ratio updater */
+    let rafX = null;
     const applyX = () => {
+      const centerX = measureCenter();            // <- re-measure!
       el.style.setProperty('--pr', (xPos - centerX) / halfW);
       rafX = null;
     };
@@ -48,7 +53,7 @@ export default function ParallaxHall({
     });
     applyX();
 
-    /* scroll-ease */
+    /* eased scroll progress 0-1 */
     let rafS = null;
     const applyS = v => {
       const eased = Math.sqrt(Math.max(0, Math.min(v, 1)) / 1.2);
@@ -60,8 +65,8 @@ export default function ParallaxHall({
     });
     el.style.setProperty('--scrollEase', 0);
 
+    /* cleanup */
     return () => {
-      window.removeEventListener('resize', measure);
       unX();
       unS();
       if (rafX) cancelAnimationFrame(rafX);
@@ -69,14 +74,9 @@ export default function ParallaxHall({
     };
   }, [pointerX, scrollYProgress]);
 
-  /* ── constants to control apparent depth ─────────────────────── */
-  const DEPTH_SPREAD = 100;     // bigger → layers differ more in size
-  const BASE_P       = 600;     // overall scale baseline
-  const FRONT_BOOST  = 0.45;    // extra scale for positive-depth layer(s)
-
+  /* ───────── render ───────── */
   const maxDepth = Math.max(...layers.map(l => Math.abs(l.depth)));
 
-  /* ── render ──────────────────────────────────────────────────── */
   return (
     <div
       ref={ref}
@@ -91,13 +91,13 @@ export default function ParallaxHall({
       {layers.map(l => {
         const strength = Math.abs(l.depth) / maxDepth;
 
-        /* scale & Y-offset: fake 3-D */
+        /* fake-3D: translateY + scale */
         const baseScale =
           l.depth > 0
-            ? 1 + l.depth * FRONT_BOOST                     // foreground boost
-            : BASE_P / (BASE_P - l.depth * DEPTH_SPREAD);   // back layers
-        const ty = l.depth * yFactor * DEPTH_SPREAD;
+            ? 1 + l.depth * FRONT_BOOST
+            : BASE_P / (BASE_P - l.depth * DEPTH_SPREAD);
 
+        const ty = l.depth * yFactor * DEPTH_SPREAD;
         const moveFactor = `calc(1 - ${strength} * 0.5)`;
 
         return (
@@ -112,7 +112,7 @@ export default function ParallaxHall({
               `,
               backfaceVisibility: 'hidden',
               transformOrigin: '50% 50%',
-              outline: '1px solid transparent', // seam-hiding trick
+              outline: '1px solid transparent',   // hide sub-pixel seams
             }}
           >
             <Image

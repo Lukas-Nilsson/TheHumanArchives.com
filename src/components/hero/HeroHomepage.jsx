@@ -32,9 +32,9 @@ export default function HeroHomepage({ onEnter = () => {} }) {
   const { scrollYProgress } = useScroll();
   const clamped = useTransform(scrollYProgress, v => Math.max(0, Math.min(1, v)));
 
-  const hallScale   = useTransform(clamped, [0, 0.5], [1, 4]); // gentler zoom
-  const fadeOpacity = useTransform(clamped, [0.1, 0.5], [0, 1]);
-  useMotionValueEvent(clamped, 'change', v => setHideHall(v > 0.5));
+  const hallScale   = useTransform(clamped, [0, 0.6], [1, 4]); // gentler zoom
+  const fadeOpacity = useTransform(clamped, [0.1, 0.6], [0, 1]);
+  useMotionValueEvent(clamped, 'change', v => setHideHall(v > 0.8));
 
   /* ── micro-parallax text ── */
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function HeroHomepage({ onEnter = () => {} }) {
   /* ── render ── */
   return (
     <>
-      <section className="sticky top-0 h-screen w-full overflow-hidden bg-[#ff00ff] text-white">
+      <section className="sticky top-0 h-screen w-full overflow-hidden bg-[#040500] text-white">
         <motion.div ref={shiftX.ref} className="h-full w-full" style={{ transform: shiftX.transform }}>
           {/* Title */}
           <div
@@ -79,7 +79,7 @@ export default function HeroHomepage({ onEnter = () => {} }) {
               style={{ scale: hallScale, willChange: 'transform' }}
             >
               {[0, 1, 2, 3, 4].map(i => (
-                <div key={i} className={i ? '-ml-[1px]' : '' /* 2 px overlap kills seams */}>
+                 <div key={i} style={i ? { marginLeft: '-5px' } : undefined}>
                   <ParallaxHall pointerX={pointerX} scrollYProgress={scrollYProgress} />
                 </div>
               ))}
