@@ -29,7 +29,7 @@ export default function ParallaxHall({
 
     // measure center once & on resize
     let centerX = 0;
-    const halfW = window.innerWidth / -2;
+    const halfW = -(window.innerWidth / 2);
     const measure = () => {
       const { left, width: w } = el.getBoundingClientRect();
       centerX = left + w / 2;

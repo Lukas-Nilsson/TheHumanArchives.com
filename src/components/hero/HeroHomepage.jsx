@@ -49,7 +49,7 @@ export default function HeroHomepage({ onEnter = () => {} }) {
 
   // 2️⃣  derive everything from the clamped value
   const hallScale  = useTransform(clamped, [0, 0.5], [1, 2.6]);
-  const hallZ      = useTransform(clamped, [0, 0.5], ['-300px', '0px']);
+  const hallZ = '-300px';
   const fadeOpacity = useTransform(clamped, [0.1, 0.5], [0, 1]);
   const perspectiveOrigin = useTransform(
     clamped,
@@ -135,7 +135,6 @@ export default function HeroHomepage({ onEnter = () => {} }) {
                 className="flex justify-center -space-x-px"
                 style={{
                   scale: hallScale,
-                  z:     hallZ,
                   transformStyle:  'preserve-3d',
                   transformOrigin: '50% 50%',
                 }}
