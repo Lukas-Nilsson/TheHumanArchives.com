@@ -40,21 +40,23 @@ export default function HeroHomepage({ onEnter = () => {} }) {
     return () => window.removeEventListener('mousemove', onMouse);
   }, [pointerX]);
 
-  // 2️⃣ Scroll-driven values
-  const { scrollYProgress } = useScroll();
+  // 1️⃣  hard-clamp the raw progress
   const shiftX        = useShiftX({ maxShift: 40 });
-  const hallScale = useTransform(scrollYProgress, [0, 0.5], [1, 2.6], { clamp: true });
-  const hallZ         = useTransform(scrollYProgress, [0, 0.5], ['-300px', '0px'], { clamp: true });
-  const fadeOpacity   = useTransform(scrollYProgress, [0.1, 0.5], [0, 1], { clamp: true });
+  const { scrollYProgress } = useScroll();
+  const clamped = useTransform(scrollYProgress, v =>
+    Math.max(0, Math.min(1, v))
+  );
+
+  // 2️⃣  derive everything from the clamped value
+  const hallScale  = useTransform(clamped, [0, 0.5], [1, 2.6]);
+  const hallZ      = useTransform(clamped, [0, 0.5], ['-300px', '0px']);
+  const fadeOpacity = useTransform(clamped, [0.1, 0.5], [0, 1]);
   const perspectiveOrigin = useTransform(
-    scrollYProgress,
+    clamped,
     [0, 0.5],
     ['50% 100%', '50% 50%']
   );
-  useMotionValueEvent(scrollYProgress, 'change', v => {
-    const clamped = Math.max(0, Math.min(1, v));
-    setHideHall(clamped > 0.9);
-  });
+  useMotionValueEvent(clamped, 'change', v => setHideHall(v > 0.9));
 
   // 3️⃣ Title & ENTER micro-parallax
   useEffect(() => {
