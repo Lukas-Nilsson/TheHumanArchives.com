@@ -76,7 +76,7 @@ export default function HeroHomepage({ onEnter = () => {} }) {
       {/* Sticky container */}
       <section
         ref={sectionRef}
-        className="sticky top-0 h-screen w-full overflow-hidden bg-[#040500] text-white"
+        className="sticky top-0 h-screen w-full overflow-hidden bg-[#ff00ff] text-white"
       >
         {/* 2.A Horizontal shift only on this block */}
         <motion.div
