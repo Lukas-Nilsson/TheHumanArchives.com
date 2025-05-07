@@ -57,8 +57,8 @@ export default function ParallaxHall({
     // scrollYProgress → --scrollEase via RAF
     let rafS = null;
     const applyS = v => {
-      const norm  = Math.min(v / 1.2, 1);
-      const eased = Math.sqrt(norm);
+      const clamped = Math.max(0, Math.min(v, 1)); // never below 0 or above 1
+      const eased   = Math.sqrt(clamped / 1.2);
       el.style.setProperty('--scrollEase', eased);
       applyX();
       rafS = null;
