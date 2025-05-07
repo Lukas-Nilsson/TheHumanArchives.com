@@ -109,7 +109,7 @@ export default function ParallaxHall({
         // adjust deeper layers' X-translation intensity
         // use 0.5 so artifact-wall (strength=1) still moves at 50% of offset
         const moveFactor = `calc(1 - var(--strength) * 0.5)`;
-
+        const safeZ = Math.min(l.depth, -50);
         return (
           <div
             key={l.depth}
@@ -121,7 +121,7 @@ export default function ParallaxHall({
                 translate3d(
                   calc(var(--pr) * ${l.offset}px * ${moveFactor}),
                   ${ty}px,
-                  ${l.depth + 0.1}px
+                  ${safeZ + 0.1}px
                 )
                 scale(calc(
                   var(--base-scale)
