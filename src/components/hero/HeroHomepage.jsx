@@ -52,7 +52,8 @@ export default function HeroHomepage({ onEnter = () => {} }) {
     ['50% 100%', '50% 50%']
   );
   useMotionValueEvent(scrollYProgress, 'change', v => {
-    setHideHall(v > 0.9);
+    const clamped = Math.max(0, Math.min(1, v));
+    setHideHall(clamped > 0.9);
   });
 
   // 3️⃣ Title & ENTER micro-parallax
@@ -119,7 +120,7 @@ export default function HeroHomepage({ onEnter = () => {} }) {
                 transformStyle: 'preserve-3d',
                 willChange: 'transform, opacity', // promote & keep on GPU
                 backfaceVisibility: 'hidden',     // iOS/Safari flash fix
-                contain: 'paint',                 // isolate repaints (Blink)
+                transform: 'translateZ(0)'                 // isolate repaints (Blink)
               }}
             >
               {/* fade overlay moved *inside* the promoted layer */}
