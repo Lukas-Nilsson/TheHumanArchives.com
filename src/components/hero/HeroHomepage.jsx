@@ -124,10 +124,10 @@ export default function HeroHomepage({ onEnter = () => {} }) {
               }}
             >
               {/* fade overlay moved *inside* the promoted layer */}
-              <motion.div
+              {/* <motion.div
                 className="absolute inset-0 bg-[#040500] pointer-events-none"
                 style={{ opacity: fadeOpacity }}
-              />
+              /> */}
 
               <motion.div
                 className="flex justify-center -space-x-px"
