@@ -151,7 +151,10 @@ export default function HeroHomepage({ onEnter = () => {} }) {
         {/* 2.B FADE TO BGCOLOR (now outside the shifting div) */}
         <motion.div
           className="absolute inset-0 bg-[#040500] pointer-events-none"
-          style={{ opacity: fadeOpacity }}
+          style={{
+            opacity: fadeOpacity, 
+            willChange: 'opacity',
+           }}
         />
       </section>
 
