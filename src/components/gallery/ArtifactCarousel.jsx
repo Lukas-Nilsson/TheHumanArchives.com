@@ -67,7 +67,12 @@ const ArtifactCarousel = forwardRef(function ArtifactCarousel(_, refPassed) {
       )}
 
       {/* ─── Track wrapper: native swipe on mobile ─── */}
-      <div className={isDesktop ? 'md:overflow-hidden' : 'overflow-x-auto scroll-smooth snap-x snap-mandatory'}>
+      <div   className={`
+    ${isDesktop
+      ? 'md:overflow-hidden'
+      : 'overflow-x-auto scroll-smooth snap-x snap-mandatory'}
+      px-8 md:px-12 pb-6 md:pb-8 scrollbar-black
+      `}>
         <motion.ul
           ref={trackRef}
           drag={isDesktop ? 'x' : false}
@@ -77,8 +82,8 @@ const ArtifactCarousel = forwardRef(function ArtifactCarousel(_, refPassed) {
           className="flex gap-8 px-8 md:cursor-grab md:active:cursor-grabbing"
         >
           {artifacts.map(({ src, alt }, i) => (
-            <li key={i} className="flex-shrink-0 w-[90vw] md:w-[36vw] snap-center">
-              <div className="aspect-[3/4] relative rounded-lg overflow-hidden bg-[#0b0c10]">
+            <li key={i} className="flex-shrink-0 w-[80vw] md:w-[36vw] snap-center px-4 py-10">
+              <div className="aspect-[4/3] relative rounded-lg overflow-hidden bg-[#0b0c10]">
                 <Image
                   src={src}
                   alt={alt}

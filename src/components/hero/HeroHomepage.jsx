@@ -43,9 +43,9 @@ export default function HeroHomepage({ onEnter = () => {} }) {
   // 2️⃣ Scroll-driven values
   const { scrollYProgress } = useScroll();
   const shiftX        = useShiftX({ maxShift: 40 });
-  const hallScale = useTransform(scrollYProgress, [0, 0.5], [1, 2.6]);
-  const hallZ         = useTransform(scrollYProgress, [0, 0.5], ['-300px', '0px']);
-  const fadeOpacity   = useTransform(scrollYProgress, [0.1, 0.5], [0, 1]);
+  const hallScale = useTransform(scrollYProgress, [0, 0.5], [1, 2.6], { clamp: true });
+  const hallZ         = useTransform(scrollYProgress, [0, 0.5], ['-300px', '0px'], { clamp: true });
+  const fadeOpacity   = useTransform(scrollYProgress, [0.1, 0.5], [0, 1], { clamp: true });
   const perspectiveOrigin = useTransform(
     scrollYProgress,
     [0, 0.5],
@@ -130,7 +130,7 @@ export default function HeroHomepage({ onEnter = () => {} }) {
               />
 
               <motion.div
-                className="flex justify-center"
+                className="flex justify-center -space-x-px"
                 style={{
                   scale: hallScale,
                   z:     hallZ,

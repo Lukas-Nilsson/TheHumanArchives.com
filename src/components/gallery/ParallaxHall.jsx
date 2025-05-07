@@ -121,7 +121,7 @@ export default function ParallaxHall({
                 translate3d(
                   calc(var(--pr) * ${l.offset}px * ${moveFactor}),
                   ${ty}px,
-                  ${l.depth}px
+                  ${l.depth + 0.1}px
                 )
                 scale(calc(
                   var(--base-scale)

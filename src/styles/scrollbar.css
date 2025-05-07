@@ -1,0 +1,12 @@
+.scrollbar-black {
+    scrollbar-width: thin;               /* Firefox */
+    scrollbar-color: #666 #040500;       /* thumb   track */
+  
+    /* WebKit */
+  }
+  .scrollbar-black::-webkit-scrollbar   { height: 8px; }
+  .scrollbar-black::-webkit-scrollbar-track { background: #040500; }
+  .scrollbar-black::-webkit-scrollbar-thumb {
+    background-color: #666;
+    border-radius: 4px;
+  }
