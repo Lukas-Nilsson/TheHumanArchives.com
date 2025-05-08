@@ -5,6 +5,8 @@
   transform-style: preserve-3d;
 }
 
+.snap-container { overscroll-behavior-y: contain; }
+
 html, body {
   background-color:#040500;         /* same as your hero */
   color-scheme: dark;               /* hints to the UA that dark UI chrome is OK */

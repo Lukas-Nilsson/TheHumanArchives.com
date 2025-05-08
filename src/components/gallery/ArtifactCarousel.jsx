@@ -25,7 +25,7 @@ const ArtifactCarousel = forwardRef(function ArtifactCarousel(_, passedRef) {
     <section id="origins" ref={wrapperRef} className="relative h-[100dvh] bg-[#040500] text-white">
       <div
         ref={trackRef}
-        className="h-full overflow-y-auto snap-y snap-mandatory"
+        className="snap-container h-full overflow-y-auto snap-y snap-mandatory"
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {artifacts.map((a, i) => {
@@ -68,7 +68,7 @@ const ArtifactCarousel = forwardRef(function ArtifactCarousel(_, passedRef) {
                 <dt className="font-medium text-gray-300">Discipline</dt> <dd>{a.discipline}</dd>
               </dl>
 
-              <p className="mt-4 max-w-md text-center text-sm leading-snug text-gray-300">
+              <p className="mt-4 mb-[calc(env(safe-area-inset-bottom)+4rem)] sm:mb-8 max-w-md text-center text-sm leading-snug text-gray-300">
                 {a.description}
               </p>
             </motion.article>
@@ -76,7 +76,10 @@ const ArtifactCarousel = forwardRef(function ArtifactCarousel(_, passedRef) {
         })}
 
         {/* sentinel to exit reel */}
-        <div className="pointer-events-none h-[100dvh]" style={{ scrollSnapAlign: 'none' }} />
+        <div
+          className="pointer-events-none h-[25vh]"
+          style={{ scrollSnapAlign: 'none', overscrollBehaviorY: 'contain' }}
+        />
       </div>
     </section>
   );
