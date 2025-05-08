@@ -1,0 +1,6 @@
+// @ts-nocheck
+export const blurMap = {
+  "public/ChatGPT Image May 1, 2025, 05_41_42 PM.png":"data:image/png;base64,...",
+  "public/Hall-full.png":"data:image/png;base64,...",
+  /* many more lines */
+};

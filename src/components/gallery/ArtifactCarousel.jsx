@@ -69,7 +69,10 @@ const ArtifactCarousel = forwardRef(function ArtifactCarousel(_, passedRef) {
         ))}
 
         {/* sentinel to exit reel */}
-        <div className="h-[100dvh] snap-start" />
+        <div
+          className="pointer-events-none h-[100dvh]"
+          style={{ scrollSnapAlign: 'none' }}   // overrides the parent snap
+        />
       </div>
     </section>
   );
