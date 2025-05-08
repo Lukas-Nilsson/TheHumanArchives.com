@@ -9,12 +9,11 @@ export async function POST(req) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
 
-  cookies().set('site_auth', 'true', {
+  const cookieStore = await cookies(); // ← await first
+  cookieStore.set('site_auth', 'true', {
     httpOnly: true,
-    maxAge: 60 * 60 * 24,
+    maxAge: 60 * 60 * 24, // 1 day
     path: '/',
-    sameSite: 'lax',
-    secure: true,
   });
 
   return NextResponse.json({ ok: true });

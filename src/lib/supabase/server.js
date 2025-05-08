@@ -2,10 +2,10 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies, headers } from 'next/headers';
 
 /** Create a Supabase client that shares Next.js request cookies/headers */
-export function createClient() {
-  // These helpers are synchronous in Next 15
-  const cookieStore = cookies();
-  const headerStore = headers();
+export async function createClient() {
+  // In dynamic contexts these are Promises; in static they’re plain objects.
+  const cookieStore = await cookies();
+  const headerStore = await headers();
 
   return createServerClient(
     process.env.SUPABASE_URL,

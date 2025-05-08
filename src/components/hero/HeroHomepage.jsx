@@ -96,8 +96,8 @@ export default function HeroHomepage({ onEnter = () => {} }) {
         <motion.div ref={shiftX.ref} className="h-full w-full" style={{ transform: shiftX.transform }}>
           {/* ───── Title ───── */}
           <motion.div
-            className="absolute top-32 left-1/2 z-30 select-none pointer-events-none
-                       text-4xl leading-tight tracking-wide origin-bottom bg-[#040500]"
+            className="absolute top-24 left-1/2 z-30 select-none pointer-events-none
+                       text-4xl leading-tight tracking-wide origin-bottom"
             style={{ x: titleX, y: titleY, scale: titleScale, translateX: '-50%' }}
           >
             THE<br />HUMAN<br />ARCHIVES
