@@ -138,9 +138,9 @@ export default function SiteHeader() {
       {/* Mobile */}
       <header className="md:hidden fixed bottom-0 left-0 w-full z-40
                    bg-[#040500]/20 backdrop-blur-sm text-white
-                   flex justify-center py-6">
+                   flex justify-center py-8">
         <nav className="text-sm uppercase tracking-widest w-full">
-          <ul className="flex justify-around w-full px-4">
+          <ul className="flex justify-around w-full px-4 -translate-y-3">
             <li>
               <MenuLink
                 href="/archives/"

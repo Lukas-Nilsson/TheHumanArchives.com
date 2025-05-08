@@ -4,3 +4,8 @@
   perspective: 800px;
   transform-style: preserve-3d;
 }
+
+html, body {
+  background-color:#040500;         /* same as your hero */
+  color-scheme: dark;               /* hints to the UA that dark UI chrome is OK */
+}

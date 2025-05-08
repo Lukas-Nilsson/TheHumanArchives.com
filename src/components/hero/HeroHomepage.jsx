@@ -39,7 +39,7 @@ const hallLayers = [
 
 export default function HeroHomepage({ onEnter = () => {} }) {
   // —— tunables (add near the top) —————————————————————————
-  const HALL_OVERLAP = -80;  
+  const HALL_OVERLAP = -40;  
   
   /* ── refs & state ── */
   const titleRef = useRef(null);

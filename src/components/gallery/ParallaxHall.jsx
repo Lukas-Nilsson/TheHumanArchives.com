@@ -33,7 +33,7 @@ export default function ParallaxHall({
   /* ───────── pointer & scroll → CSS vars ───────── */
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el) return; 
 
     /* track hall centre on every frame so scaling never drifts */
     const halfW = -(window.innerWidth / 2);  // invert X-parallax
