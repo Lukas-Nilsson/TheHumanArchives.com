@@ -28,7 +28,7 @@ export default function ParallaxHall({
   /* ─────────── Tunables ─────────── */
   const DEPTH_SPREAD = 200;   // spacing between layer sizes
   const BASE_P       = 500;   // base scale divisor
-  const FRONT_BOOST  = 0.75;  // extra pop for positive-depth layer(s)
+  const FRONT_BOOST  = 0.70;  // extra pop for positive-depth layer(s)
   const POINTER_MULT = 1;
   /* ───────── pointer & scroll → CSS vars ───────── */
   useLayoutEffect(() => {

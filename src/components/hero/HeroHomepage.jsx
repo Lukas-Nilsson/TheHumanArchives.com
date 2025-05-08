@@ -1,5 +1,4 @@
 // src/components/hero/HeroHomepage.jsx
-
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
@@ -10,9 +9,13 @@ import {
   useMotionValue,
   useMotionValueEvent,
 } from 'framer-motion';
-import useShiftX from '@/hooks/useShiftX';
-import ParallaxHall from '@/components/gallery/ParallaxHall';
-import GhostButton from '@/components/common/GhostButton';
+import useShiftX     from '@/hooks/useShiftX';
+import ParallaxHall  from '@/components/gallery/ParallaxHall';
+import GhostButton   from '@/components/common/GhostButton';
+
+/* ------------------------------------------------------------------ */
+/*  Layer definitions                                                 */
+/* ------------------------------------------------------------------ */
 
 const columbusOnly = [
   { src: '/arch-foreground-columbus.png', depth: 0, offset: -30 },
@@ -28,7 +31,7 @@ const originsFull = [
   { src: '/arch-foreground-origins-2.png', depth: 0, offset: -30 },
 ];
 
-// 2️⃣  One array = one hall’s layer stack
+/* 0–4 → the five halls rendered side-by-side */
 const hallLayers = [
   columbusOnly,   // 0
   columbusOnly,   // 1
@@ -37,60 +40,77 @@ const hallLayers = [
   columbusOnly,   // 4
 ];
 
-export default function HeroHomepage({ onEnter = () => {} }) {
-  // —— tunables (add near the top) —————————————————————————
-  const HALL_OVERLAP = -40;  
-  
-  /* ── refs & state ── */
-  const titleRef = useRef(null);
-  const enterRef = useRef(null);
-  const [hideHall, setHideHall] = useState(false);
+/* ------------------------------------------------------------------ */
+/*  Component                                                         */
+/* ------------------------------------------------------------------ */
 
-  /* ── pointer-X ── */
+export default function HeroHomepage({ onEnter = () => {} }) {
+  /* ───────────────── Tunables ───────────────── */
+  const HALL_OVERLAP = -40;           // negative margin between halls
+  const TITLE_RISE   = -900;          // px the title floats up by scroll-end
+
+  /* ───────────────── State & refs ───────────────── */
+  const [hideHall, setHideHall] = useState(false);
+  const enterRef = useRef(null);
+
+  /* ───────────────── Mouse X tracking ───────────────── */
   const pointerX = useMotionValue(0);
   useEffect(() => {
     if (typeof window === 'undefined' || window.matchMedia('(hover: none)').matches) return;
-    const fn = e => pointerX.set(e.clientX);
-    window.addEventListener('mousemove', fn, { passive: true });
-    return () => window.removeEventListener('mousemove', fn);
+    const move = e => pointerX.set(e.clientX);
+    window.addEventListener('mousemove', move, { passive: true });
+    return () => window.removeEventListener('mousemove', move);
   }, [pointerX]);
 
-  /* ── scroll-derived values ── */
-  const shiftX = useShiftX({ maxShift: 40 });
-  const { scrollYProgress } = useScroll();
+  /* ───────────────── Scroll-derived transforms ───────────────── */
+  const shiftX = useShiftX({ maxShift: 40 });               // subtle hall sway
+  const { scrollYProgress } = useScroll();                  // whole page – still fine
   const clamped = useTransform(scrollYProgress, v => Math.max(0, Math.min(1, v)));
 
-  const hallScale   = useTransform(clamped, [0, 1], [1.5, 5]); // gentler zoom
+  const hallScale   = useTransform(clamped, [0, 1], [1.5, 5]);
   const fadeOpacity = useTransform(clamped, [0.1, 0.7], [0, 1]);
   useMotionValueEvent(clamped, 'change', v => setHideHall(v > 0.8));
 
-  /* ── micro-parallax text ── */
+  /* ─────────── Title motion (matches front hall) ─────────── */
+  const titleScale = useTransform(clamped, [0, 1], [1, 5 / 1.5]);  // ≈ 1 → 3.33
+  const titleY     = useTransform(clamped, [0, 1], [0, TITLE_RISE]);
+  const titleX     = useTransform(pointerX, x =>
+    ((x / (typeof window !== 'undefined' ? window.innerWidth : 1)) * 2 - 1) * -20
+  );
+
+  /* ─────────── Micro-parallax for ENTER button ─────────── */
   useEffect(() => {
     if (typeof window === 'undefined' || window.matchMedia('(hover: none)').matches) return;
     const fn = e => {
       const r = (e.clientX / window.innerWidth) * 2 - 1;
-      titleRef.current?.style.setProperty('transform', `translateX(${r * -20}px)`);
       enterRef.current?.style.setProperty('transform', `translateX(${r * -10}px)`);
     };
     window.addEventListener('mousemove', fn, { passive: true });
     return () => window.removeEventListener('mousemove', fn);
   }, []);
 
-  /* ── render ── */
+  /* ───────────────── Render ───────────────── */
   return (
     <>
       <section className="sticky top-0 h-screen w-full overflow-hidden bg-[#040500] text-white">
         <motion.div ref={shiftX.ref} className="h-full w-full" style={{ transform: shiftX.transform }}>
-          {/* Title */}
-          <div
-            ref={titleRef}
-            className="absolute top-25 left-1/2 -translate-x-1/2 z-30 select-none pointer-events-none text-4xl leading-tight tracking-wide bg-[#040500]"
+          {/* ───── Title ───── */}
+          <motion.div
+            className="absolute top-32 left-1/2 z-30 select-none pointer-events-none
+                       text-4xl leading-tight tracking-wide origin-bottom bg-[#040500]"
+            style={{ x: titleX, y: titleY, scale: titleScale, translateX: '-50%' }}
           >
             THE<br />HUMAN<br />ARCHIVES
-          </div>
+          </motion.div>
 
-          {/* Enter button */}
-
+          {/* ───── ENTER button (optional) ───── */}
+          {/* <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-30">
+            <div ref={enterRef} className="flex flex-col items-center cursor-pointer">
+              <GhostButton as="button" onClick={onEnter} className="text-lg px-10 py-4">
+                ENTER
+              </GhostButton>
+            </div>
+          </div> */}
 
           {/* ───── Parallax halls ───── */}
           {!hideHall && (
@@ -99,18 +119,16 @@ export default function HeroHomepage({ onEnter = () => {} }) {
               className="absolute bottom-0 inset-x-0 flex justify-center cursor-pointer"
               style={{ scale: hallScale, willChange: 'transform' }}
             >
-              {/*  strip wrapper must be relative so mask <span>s align */}
               <div className="relative flex">
-                {/* halls */}
-                {[0, 1, 2, 3, 4].map(i => (
-                <div key={i} style={i ? { marginLeft: `${HALL_OVERLAP}px` } : undefined}>
-                  <ParallaxHall
-                    pointerX={pointerX}
-                    scrollYProgress={scrollYProgress}
-                    layers={hallLayers[i]}   // 👈 NEW – per-hall override
-                  />
-                </div>
-              ))}
+                {hallLayers.map((layers, i) => (
+                  <div key={i} style={i ? { marginLeft: `${HALL_OVERLAP}px` } : undefined}>
+                    <ParallaxHall
+                      pointerX={pointerX}
+                      scrollYProgress={scrollYProgress}
+                      layers={layers}
+                    />
+                  </div>
+                ))}
 
                 {/* seam-mask bars */}
                 {[1, 2, 3, 4].map(i => (
@@ -118,8 +136,8 @@ export default function HeroHomepage({ onEnter = () => {} }) {
                     key={`mask-${i}`}
                     className="pointer-events-none absolute inset-y-0 w-4"
                     style={{
-                      left: `calc(${i} * 100% - 1px)`,   // centres each 4-px bar
-                      background: '#040500',            // match page bg colour
+                      left: `calc(${i} * 100% - 1px)`,
+                      background: '#040500',
                     }}
                   />
                 ))}
@@ -135,7 +153,7 @@ export default function HeroHomepage({ onEnter = () => {} }) {
         />
       </section>
 
-      {/* placeholder grid */}
+      {/* placeholder grid (demo content) */}
       <section className="bg-[#040500] text-white py-24">
         <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-8 px-6">
           {Array.from({ length: 10 }).map((_, i) => (
