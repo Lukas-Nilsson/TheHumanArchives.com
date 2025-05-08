@@ -1,3 +1,5 @@
+// src/components/hero/HeroHomepage.jsx
+
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
@@ -12,7 +14,33 @@ import useShiftX from '@/hooks/useShiftX';
 import ParallaxHall from '@/components/gallery/ParallaxHall';
 import GhostButton from '@/components/common/GhostButton';
 
+const columbusOnly = [
+  { src: '/arch-foreground-columbus.png', depth: 0, offset: -30 },
+];
+
+const originsFull = [
+  { src: '/artifact-wall.png',  depth: -6, offset: -200 },
+  { src: '/arch-midground.png', depth: -5, offset: -130 },
+  { src: '/arch-midground.png', depth: -4, offset: -110 },
+  { src: '/arch-midground.png', depth: -3, offset:  -90 },
+  { src: '/arch-midground.png', depth: -2, offset:  -70 },
+  { src: '/arch-midground.png', depth: -1, offset:  -50 },
+  { src: '/arch-foreground-origins-2.png', depth: 0, offset: -30 },
+];
+
+// 2️⃣  One array = one hall’s layer stack
+const hallLayers = [
+  columbusOnly,   // 0
+  columbusOnly,   // 1
+  originsFull,    // 2  ← middle hall
+  columbusOnly,   // 3
+  columbusOnly,   // 4
+];
+
 export default function HeroHomepage({ onEnter = () => {} }) {
+  // —— tunables (add near the top) —————————————————————————
+  const HALL_OVERLAP = -80;  
+  
   /* ── refs & state ── */
   const titleRef = useRef(null);
   const enterRef = useRef(null);
@@ -32,7 +60,7 @@ export default function HeroHomepage({ onEnter = () => {} }) {
   const { scrollYProgress } = useScroll();
   const clamped = useTransform(scrollYProgress, v => Math.max(0, Math.min(1, v)));
 
-  const hallScale   = useTransform(clamped, [0, 1], [1, 5]); // gentler zoom
+  const hallScale   = useTransform(clamped, [0, 1], [1.5, 5]); // gentler zoom
   const fadeOpacity = useTransform(clamped, [0.1, 0.7], [0, 1]);
   useMotionValueEvent(clamped, 'change', v => setHideHall(v > 0.8));
 
@@ -81,13 +109,14 @@ export default function HeroHomepage({ onEnter = () => {} }) {
               <div className="relative flex">
                 {/* halls */}
                 {[0, 1, 2, 3, 4].map(i => (
-                  <div key={i} style={i ? { marginLeft: '-1px' } : undefined}>
-                    <ParallaxHall
-                      pointerX={pointerX}
-                      scrollYProgress={scrollYProgress}
-                    />
-                  </div>
-                ))}
+                <div key={i} style={i ? { marginLeft: `${HALL_OVERLAP}px` } : undefined}>
+                  <ParallaxHall
+                    pointerX={pointerX}
+                    scrollYProgress={scrollYProgress}
+                    layers={hallLayers[i]}   // 👈 NEW – per-hall override
+                  />
+                </div>
+              ))}
 
                 {/* seam-mask bars */}
                 {[1, 2, 3, 4].map(i => (

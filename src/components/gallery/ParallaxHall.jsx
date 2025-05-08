@@ -1,7 +1,11 @@
+// src/components/gallery/ParallaxHall.jsx
+
 'use client';
 
 import { useRef, useLayoutEffect } from 'react';
 import Image from 'next/image';
+
+
 
 export default function ParallaxHall({
   pointerX,
@@ -16,16 +20,16 @@ export default function ParallaxHall({
     { src: '/arch-midground.png', depth: -2, offset:  -70 },
     { src: '/arch-midground.png', depth: -1, offset:  -50 },
     { src: '/arch-midground.png', depth:  0, offset:  -30 },
-    { src: '/arch-foreground.png',depth:  1, offset:  -10 },
+    { src: '/arch-foreground.png',depth:  1, offset:  -5 },
   ],
 }) {
   const ref = useRef(null);
 
   /* ─────────── Tunables ─────────── */
-  const DEPTH_SPREAD = 100;   // spacing between layer sizes
+  const DEPTH_SPREAD = 150;   // spacing between layer sizes
   const BASE_P       = 600;   // base scale divisor
   const FRONT_BOOST  = 0.45;  // extra pop for positive-depth layer(s)
-
+  const POINTER_MULT = 0.60;
   /* ───────── pointer & scroll → CSS vars ───────── */
   useLayoutEffect(() => {
     const el = ref.current;
@@ -44,7 +48,7 @@ export default function ParallaxHall({
     let rafX = null;
     const applyX = () => {
       const centerX = measureCenter();            // <- re-measure!
-      el.style.setProperty('--pr', (xPos - centerX) / halfW);
+      el.style.setProperty('--pr', ((xPos - centerX) / halfW) * POINTER_MULT);
       rafX = null;
     };
     const unX = pointerX.onChange(v => {
@@ -77,7 +81,7 @@ export default function ParallaxHall({
   }, [pointerX, scrollYProgress]);
 
   /* ───────── render ───────── */
-  const maxDepth = Math.max(...layers.map(l => Math.abs(l.depth)));
+  const maxDepth = Math.max(...layers.map(l => Math.abs(l.depth)))|| 1;
 
   return (
     <div
