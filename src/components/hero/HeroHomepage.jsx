@@ -19,7 +19,7 @@ const columbusOnly = [
 ];
 
 const originsFull = [
-  { src: '/artifact-wall.png',  depth: -6, offset: -200 },
+  { src: '/artifact-wall.png',  depth: -6, offset: -160 },
   { src: '/arch-midground.png', depth: -5, offset: -130 },
   { src: '/arch-midground.png', depth: -4, offset: -110 },
   { src: '/arch-midground.png', depth: -3, offset:  -90 },
@@ -84,19 +84,13 @@ export default function HeroHomepage({ onEnter = () => {} }) {
           {/* Title */}
           <div
             ref={titleRef}
-            className="absolute top-40 left-1/2 -translate-x-1/2 z-30 select-none pointer-events-none text-2xl leading-tight tracking-wide"
+            className="absolute top-25 left-1/2 -translate-x-1/2 z-30 select-none pointer-events-none text-4xl leading-tight tracking-wide bg-[#040500]"
           >
             THE<br />HUMAN<br />ARCHIVES
           </div>
 
           {/* Enter button */}
-          <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30">
-            <div ref={enterRef} className="flex flex-col items-center cursor-pointer">
-              <GhostButton as="button" onClick={onEnter} className="text-lg px-10 py-40">
-                ENTER
-              </GhostButton>
-            </div>
-          </div>
+
 
           {/* ───── Parallax halls ───── */}
           {!hideHall && (
