@@ -6,10 +6,12 @@ import Image from 'next/image';
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { artifacts } from '@/data/origins';
 import { blurMap } from '@/blur-map';
+import useScrollHandoff from '@/hooks/useScrollHandoff';
 
 const ArtifactCarousel = forwardRef(function ArtifactCarousel(_, passedRef) {
   const wrapperRef = passedRef || useRef(null);
   const trackRef = useRef(null);
+  useScrollHandoff(trackRef);
 
   /* haptic tick on snap */
   const { scrollYProgress } = useScroll({ container: trackRef });

@@ -1,3 +1,4 @@
+/* src/styles/scrollbar.css */
 .scrollbar-black {
     scrollbar-width: thin;               /* Firefox */
     scrollbar-color: #666 #040500;       /* thumb   track */
