@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Thee Human Archives",
+  title: "The Human Archives",
   description: "Celebrating humanity one artifact at a time",
 };
 

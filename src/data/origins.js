@@ -24,7 +24,7 @@ export const artifacts = [
         {
           "slug": "i-think",
           "title": "Darwin’s \"I think\" Sketch",
-          "src": "/artifacts/i-think.png",
+          "src": "/artifacts/I-think.png",
           "date": "1837 CE",
           "location": "Notebook B, Down House, England",
           "archive": "Origins",
