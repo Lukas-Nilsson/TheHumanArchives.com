@@ -48,7 +48,10 @@ export default function ParallaxHall({
     let rafX = null;
     const applyX = () => {
       const centerX = measureCenter();            // <- re-measure!
-      el.style.setProperty('--pr', ((xPos - centerX) / halfW) * POINTER_MULT);
+      const raw = (xPos - centerX) / halfW;               // -∞ … +∞
+      /* soft-limit:  r / (1 + |r|)  →  -1 … +1  but never quite flat-lines   */
+      const damped = raw / (1 + Math.abs(raw));
+      el.style.setProperty('--pr', damped * POINTER_MULT);
       rafX = null;
     };
     const unX = pointerX.onChange(v => {
