@@ -9,6 +9,7 @@ import {
   useMotionValue,
   useMotionValueEvent,
 } from 'framer-motion';
+import useHeaderHeight from '@/hooks/useHeaderHeight';
 import useShiftX     from '@/hooks/useShiftX';
 import ParallaxHall  from '@/components/gallery/ParallaxHall';
 import GhostButton   from '@/components/common/GhostButton';
@@ -45,6 +46,8 @@ const hallLayers = [
 /* ------------------------------------------------------------------ */
 
 export default function HeroHomepage({ onEnter = () => {} }) {
+  useHeaderHeight();  
+
   /* ───────────────── Tunables ───────────────── */
   const HALL_OVERLAP = -40;           // negative margin between halls
   const TITLE_RISE   = -900;          // px the title floats up by scroll-end
@@ -92,13 +95,34 @@ export default function HeroHomepage({ onEnter = () => {} }) {
   /* ───────────────── Render ───────────────── */
   return (
     <>
-      <section className="sticky top-0 h-screen w-full overflow-hidden bg-[#040500] text-white">
-        <motion.div ref={shiftX.ref} className="h-full w-full" style={{ transform: shiftX.transform }}>
-          {/* ───── Title ───── */}
+      <section
+        className="sticky top-0 w-full overflow-hidden bg-[#040500] text-white"
+        style={{ height: '100dvh' }}
+      >
+        {/* outer motion wrapper → gets the subtle X-shift */}
+        <motion.div
+          ref={shiftX.ref}
+          className="h-full w-full"
+          style={{ transform: shiftX.transform }}
+        >
+          {/*  Title  */}
           <motion.div
-            className="absolute top-24 left-1/2 z-30 select-none pointer-events-none
-                       text-4xl leading-tight tracking-wide origin-bottom"
-            style={{ x: titleX, y: titleY, scale: titleScale, translateX: '-50%' }}
+            className="absolute left-1/2 z-30 select-none pointer-events-none
+                      text-4xl leading-tight tracking-wide origin-bottom"
+            /* 1️⃣ header height   2️⃣ any notch/status-bar inset   3️⃣ small margin */
+            style={{
+              top: `
+                calc(
+                  var(--header-h,72px) +
+                  env(safe-area-inset-top,0px) +
+                  clamp(4vh, 7.5vh, 12vh)
+                )
+              `,
+              x: titleX,
+              y: titleY,
+              scale: titleScale,
+              translateX: '-50%',
+            }}
           >
             THE<br />HUMAN<br />ARCHIVES
           </motion.div>
